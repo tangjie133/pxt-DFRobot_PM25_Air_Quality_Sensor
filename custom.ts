@@ -5,26 +5,33 @@
  */
 
 enum MyEnum {
-    //% block="PM1.0"
-    PM1_0,
-    //% block="PM2.5"
-    PM2_5,
-    //% block="PM10"
-    PM10
+    //% block="PARTICLE_PM1_0_STANDARD"
+    PM1_0=0X05,
+    //% block="PARTICLE_PM2_5_STANDARD"
+    PM2_5=0X07,
+    //% block="PARTICLE_PM10_STANDARD"
+    PM10=0X09,
+    //% block="PARTICLE_PM1_0_ATMOSPHERE"
+    PM1_0A=0X0B,
+    //% block="PARTICLE_PM2_5_ATMOSPHERE"
+    PM2_5A=0X0D,
+    //% block="PARTICLE_PM10_ATMOSPHERE"
+    PM10A=0X0F,
+
 }
 enum MyEnum1 {
-    //% block="0.3um/0.1L"
-    UM03,
-    //% block="0.5um/0.1L"
-    UM05,
-    //% block="1.0um/0.1L"
-    UM10,
-    //% block="2.5um/0.1L"
-    UM25,
-    //% block="5.0um/0.1L"
-    UM50,
-    //% block="10um/0.1L"
-    UM100
+    //% block="PARTICLENUM_0_3_UM_EVERY0_1L_AIR"
+    UM03=0X11,
+    //% block="PARTICLENUM_0_5_UM_EVERY0_1L_AIR"
+    UM05=0X13,
+    //% block="PARTICLENUM_1_0_UM_EVERY0_1L_AIR"
+    UM10=0X15,
+    //% block="PARTICLENUM_2_5_UM_EVERY0_1L_AIR"
+    UM25=0X17,
+    //% block="PARTICLENUM_5_0_UM_EVERY0_1L_AIR"
+    UM50=0X19,
+    //% block="PARTICLENUM_10_UM_EVERY0_1L_AIR"
+    UM100=0X1B
 }
 
 /**
@@ -32,87 +39,78 @@ enum MyEnum1 {
  */
 //% weight=100 color=#0fbc11 icon="" block="PM2.5 Air Quality Sensor"
 namespace custom {
-    let buffer:number[] = [];
     let I2CAddr = 0x19;
+    let PARTICLENUM_GAIN_VERSION = 0x1D;
     /**
-     * TODO: 请求原始数据
-     */
-    //% block="request data"
-    //% weight=99
-    export function requestData(): void {
-        pins.i2cWriteNumber(I2CAddr, 0X05, NumberFormat.Int8LE)
-        let _buffer = pins.i2cReadBuffer(I2CAddr, 25)
-        for(let i = 0; i < 25; i++){
-            buffer[i]=_buffer[i];
-        }
-    }
-
-    /**
-     * TODO: 标准下数据
+     * TODO: 获取指定颗粒物大小
      * @param eOption 获取数据选项
      */
-    //% block="standard concentration %eOption"
+    //% block="particle concentration %eOption"
     //% weight=98
-    export function standard(eOption: MyEnum): number {
+    export function gainParticleConcentration_ugm3(eOption: MyEnum): number {
         let data;
+        let buffer;
         switch(eOption){
             case MyEnum.PM1_0:
+                buffer = readReg(MyEnum.PM1_0,2);
                 data = (buffer[0]<<8)|buffer[1];
             break;
             case MyEnum.PM2_5:
-                data = (buffer[2]<<8)|buffer[3];
+                buffer = readReg(MyEnum.PM2_5,2);
+                data = (buffer[0]<<8)|buffer[1];
+            break;
+            case MyEnum.PM10:
+                buffer = readReg(MyEnum.PM10,2);
+                data = (buffer[0]<<8)|buffer[1];
+            break;
+            case MyEnum.PM1_0A:
+                buffer = readReg(MyEnum.PM1_0A,2);
+                data = (buffer[0]<<8)|buffer[1];
+            break;
+            case MyEnum.PM2_5A:
+                buffer = readReg(MyEnum.PM2_5A,2);
+                data = (buffer[0]<<8)|buffer[1];
             break;
             default:
-                data = (buffer[4]<<8)|buffer[5]
+                buffer = readReg(MyEnum.PM10A,2);
+                data = (buffer[0]<<8)|buffer[1];
         }
         return data;
     }
+    
     /**
-     * TODO: 大气下数据
-     * @param eOption 获取数据选项
-     */
-    //% block="atmosphere concentration %eOption"
-    //% weight=97
-    export function atmosphere(eOption: MyEnum): number {
-        let data;
-        switch(eOption){
-            case MyEnum.PM1_0:
-                data = (buffer[6]<<8)|buffer[7];
-            break;
-            case MyEnum.PM2_5:
-                data = (buffer[8]<<8)|buffer[9];
-            break;
-            default:
-                data = (buffer[10]<<8)|buffer[11]
-        }
-        return data;
-    }
-    /**
-     * TODO: 空气中粒子数
+     * TODO: 获取在0.1升空气中的颗粒物的个数
      * @param eOption 获取数据选项
      */
     //% block="particle number %eOption"
     //% weight=96
     export function particleNumber(eOption: MyEnum1): number {
         let data;
+        let buffer;
         switch(eOption){
             case MyEnum1.UM03:
-                data = (buffer[12]<<8)|buffer[13];
+                buffer = readReg(MyEnum1.UM03,2);
+                data = (buffer[0]<<8)|buffer[1];
             break;
             case MyEnum1.UM05:
-                data = (buffer[14]<<8)|buffer[15];
+                buffer = readReg(MyEnum1.UM05,2);
+                data = (buffer[0]<<8)|buffer[1];
             break;
             case MyEnum1.UM10:
-                data = (buffer[16]<<8)|buffer[17];
+                buffer = readReg(MyEnum1.UM10,2);
+                data = (buffer[0]<<8)|buffer[1];
             break;
             case MyEnum1.UM25:
-                data = (buffer[18]<<8)|buffer[19];
+                buffer = readReg(MyEnum1.UM25,2);
+                data = (buffer[0]<<8)|buffer[1];
             break;
             case MyEnum1.UM50:
-                data = (buffer[20]<<8)|buffer[21];
+                buffer = readReg(MyEnum1.UM50,2);
+                data = (buffer[0]<<8)|buffer[1];
             break;
             default:
-                data = (buffer[22]<<8)|buffer[23]
+                buffer = readReg(MyEnum1.UM100,2);
+                data = (buffer[0]<<8)|buffer[1];
         }
         return data;
     }
@@ -122,6 +120,27 @@ namespace custom {
     //% block="read version"
     //% weight=96
     export function readVersion(): number {
-        return buffer[24];
+        let buffer = readReg(PARTICLENUM_GAIN_VERSION,1);
+        return buffer[0];
+    }
+    /**
+     * TODO: 从指定传感器中获取指定长度数据
+     * @param  reg 寄存器值
+     * @param  len 获取数据长度
+     * @return 返回获取数据的buffer
+     */
+    function readReg(reg:number, len:number):Buffer{
+        pins.i2cWriteNumber(I2CAddr, reg, NumberFormat.Int8LE);
+        return pins.i2cReadBuffer(I2CAddr, len);
+    }
+
+    /**
+     * TODO:向指定传感器寄存器中写入数据
+     * @param reg 寄存器值
+     * @param buf 写入数据
+     * @return 无返回
+     */
+    function writeReg(buf:Buffer):void{
+        pins.i2cWriteBuffer(I2CAddr, buf);
     }
 }
