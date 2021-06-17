@@ -1,5 +1,5 @@
 {
-    "name": "pxt=DFRobot_PM2.5_Air_Quality_Sensor",
+    "name": "DFRobot_PM2.5_Air_Quality_Sensor",
     "version": "0.0.2",
     "description": "",
     "dependencies": {
@@ -10,6 +10,7 @@
     "files": [
         "main.blocks",
         "main.ts",
+        "_locales/zh-cn/DFRobot_PM2.5_Air_Quality_Sensor-strings.json",
         "README.md",
         "custom.ts"
     ],
