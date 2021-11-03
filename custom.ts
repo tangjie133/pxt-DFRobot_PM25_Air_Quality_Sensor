@@ -5,23 +5,17 @@
  */
 
 enum MyEnum {
-    //% block="PARTICLE_PM1_0_STANDARD"
-    PM1_0=0X05,
-    //% block="PARTICLE_PM2_5_STANDARD"
-    PM2_5=0X07,
-    //% block="PARTICLE_PM10_STANDARD"
-    PM10=0X09,
-    //% block="PARTICLE_PM1_0_ATMOSPHERE"
-    PM1_0A=0X0B,
-    //% block="PARTICLE_PM2_5_ATMOSPHERE"
-    PM2_5A=0X0D,
-    //% block="PARTICLE_PM10_ATMOSPHERE"
-    PM10A=0X0F,
+    //% block="PM1.0"
+    PM1_0=0,
+    //% block="PM2.5"
+    PM2_5=1,
+    //% block="PM10"
+    PM10=2,
 }
 enum MyType{
-    //% block = "standard"
-    STANDARD = 0,
-    //% block = "atmosphere"
+    //% block="standard"
+    STANDARD=0,
+    //% block="atmosphere"
     ATMOSPHERE = 1,
 }
 enum MyEnum1 {
@@ -46,7 +40,7 @@ enum MyAddr{
 /**
  * 自定义图形块
  */
-//% weight=100 color=#0fbc11 icon="" block="PM2.5 Air Quality Sensor"
+//% weight=100 color=#0fbc11 icon="\uf0d3" block="Air Quality Sensor"
 namespace custom {
     let I2CAddr = 0x19;
     let PARTICLENUM_GAIN_VERSION = 0x1D;
@@ -71,30 +65,30 @@ namespace custom {
         if (eType == MyType.STANDARD){
             switch (eOption) {
                 case MyEnum.PM1_0:
-                    buffer = readReg(MyEnum.PM1_0, 2);
+                    buffer = readReg(0X05, 2);
                     data = (buffer[0] << 8) | buffer[1];
                     break;
                 case MyEnum.PM2_5:
-                    buffer = readReg(MyEnum.PM2_5, 2);
+                    buffer = readReg(0X07, 2);
                     data = (buffer[0] << 8) | buffer[1];
                     break;   
                 default:
-                    buffer = readReg(MyEnum.PM10, 2);
+                    buffer = readReg(0X09, 2);
                     data = (buffer[0] << 8) | buffer[1];
                     break;
             }
         }else {
                 switch (eOption) {
-                    case MyEnum.PM1_0A:
-                        buffer = readReg(MyEnum.PM1_0A, 2);
+                    case MyEnum.PM1_0:
+                        buffer = readReg(0X0B, 2);
                         data = (buffer[0] << 8) | buffer[1];
                         break;
-                    case MyEnum.PM2_5A:
-                        buffer = readReg(MyEnum.PM2_5A, 2);
+                    case MyEnum.PM2_5:
+                        buffer = readReg(0X0D, 2);
                         data = (buffer[0] << 8) | buffer[1];
                         break;
                     default:
-                        buffer = readReg(MyEnum.PM10A, 2);
+                        buffer = readReg(0X0F, 2);
                         data = (buffer[0] << 8) | buffer[1];
                 }
         }
