@@ -17,21 +17,30 @@ enum MyEnum {
     PM2_5A=0X0D,
     //% block="PARTICLE_PM10_ATMOSPHERE"
     PM10A=0X0F,
-
+}
+enum MyType{
+    //% block = "standard"
+    STANDARD = 0,
+    //% block = "atmosphere"
+    ATMOSPHERE = 1,
 }
 enum MyEnum1 {
-    //% block="PARTICLENUM_0_3_UM_EVERY0_1L_AIR"
+    //% block="0.3um"
     UM03=0X11,
-    //% block="PARTICLENUM_0_5_UM_EVERY0_1L_AIR"
+    //% block="0.5um"
     UM05=0X13,
-    //% block="PARTICLENUM_1_0_UM_EVERY0_1L_AIR"
+    //% block="1.0um"
     UM10=0X15,
-    //% block="PARTICLENUM_2_5_UM_EVERY0_1L_AIR"
+    //% block="2.5um"
     UM25=0X17,
-    //% block="PARTICLENUM_5_0_UM_EVERY0_1L_AIR"
+    //% block="5.0um"
     UM50=0X19,
-    //% block="PARTICLENUM_10_UM_EVERY0_1L_AIR"
+    //% block="10um"
     UM100=0X1B
+}
+enum MyAddr{
+    //% block="0X19"
+    ADDR = 0x19,
 }
 
 /**
@@ -42,39 +51,54 @@ namespace custom {
     let I2CAddr = 0x19;
     let PARTICLENUM_GAIN_VERSION = 0x1D;
     /**
+     * TODO:设置I2C地址
+     * @param addr I2C地址 
+     */
+    //% block="set I2C addr %addr"
+    //% weight=98
+    export function setAddr(eAddr: MyAddr){
+        I2CAddr = eAddr;
+    }
+    /**
      * TODO: 获取指定颗粒物大小
      * @param eOption 获取数据选项
      */
-    //% block="particle concentration %eOption"
-    //% weight=98
-    export function gainParticleConcentration_ugm3(eOption: MyEnum): number {
+    //% block="read %type %eOption particulate matter concentration in the environment(ug/m3)"
+    //% weight=96
+    export function gainParticleConcentration_ugm3(eType:MyType, eOption: MyEnum): number {
         let data;
         let buffer;
-        switch(eOption){
-            case MyEnum.PM1_0:
-                buffer = readReg(MyEnum.PM1_0,2);
-                data = (buffer[0]<<8)|buffer[1];
-            break;
-            case MyEnum.PM2_5:
-                buffer = readReg(MyEnum.PM2_5,2);
-                data = (buffer[0]<<8)|buffer[1];
-            break;
-            case MyEnum.PM10:
-                buffer = readReg(MyEnum.PM10,2);
-                data = (buffer[0]<<8)|buffer[1];
-            break;
-            case MyEnum.PM1_0A:
-                buffer = readReg(MyEnum.PM1_0A,2);
-                data = (buffer[0]<<8)|buffer[1];
-            break;
-            case MyEnum.PM2_5A:
-                buffer = readReg(MyEnum.PM2_5A,2);
-                data = (buffer[0]<<8)|buffer[1];
-            break;
-            default:
-                buffer = readReg(MyEnum.PM10A,2);
-                data = (buffer[0]<<8)|buffer[1];
+        if (eType == MyType.STANDARD){
+            switch (eOption) {
+                case MyEnum.PM1_0:
+                    buffer = readReg(MyEnum.PM1_0, 2);
+                    data = (buffer[0] << 8) | buffer[1];
+                    break;
+                case MyEnum.PM2_5:
+                    buffer = readReg(MyEnum.PM2_5, 2);
+                    data = (buffer[0] << 8) | buffer[1];
+                    break;   
+                default:
+                    buffer = readReg(MyEnum.PM10, 2);
+                    data = (buffer[0] << 8) | buffer[1];
+                    break;
+            }
+        }else {
+                switch (eOption) {
+                    case MyEnum.PM1_0A:
+                        buffer = readReg(MyEnum.PM1_0A, 2);
+                        data = (buffer[0] << 8) | buffer[1];
+                        break;
+                    case MyEnum.PM2_5A:
+                        buffer = readReg(MyEnum.PM2_5A, 2);
+                        data = (buffer[0] << 8) | buffer[1];
+                        break;
+                    default:
+                        buffer = readReg(MyEnum.PM10A, 2);
+                        data = (buffer[0] << 8) | buffer[1];
+                }
         }
+        
         return data;
     }
     
@@ -82,8 +106,8 @@ namespace custom {
      * TODO: 获取在0.1升空气中的颗粒物的个数
      * @param eOption 获取数据选项
      */
-    //% block="particle number %eOption"
-    //% weight=96
+    //% block="Read the number of particles with particle size of air as %eOption per 0.1L of air"
+    //% weight=95
     export function particleNumber(eOption: MyEnum1): number {
         let data;
         let buffer;
@@ -118,7 +142,7 @@ namespace custom {
      * TODO: 获取版本
      */
     //% block="read version"
-    //% weight=96
+    //% weight=93
     export function readVersion(): number {
         let buffer = readReg(PARTICLENUM_GAIN_VERSION,1);
         return buffer[0];
